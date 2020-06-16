@@ -1,0 +1,522 @@
+
+ <!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>巧妙运用动态规划之“戳气球” | Hexo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Li Yang">
+    
+
+    
+    <meta name="description" content="题目描述：有编号为0到n-1的n个气球，每个气球上都标有一个数组，存在nums数组中。 每当你戳破一个气球i时，你可以获得nums[left] x nums[i] x nums[right]个积分，其中left和right代表与i相邻的两个气球的编号，当你戳破了气球i后，气球left和气球right就变成了相邻的气球。现在要求你按某种顺序戳破所有的气球，能获得的最大积分是多少？（你可以假设nums">
+<meta property="og:type" content="article">
+<meta property="og:title" content="巧妙运用动态规划之“戳气球”">
+<meta property="og:url" content="http://yoursite.com/2020/04/15/%E5%B7%A7%E5%A6%99%E8%BF%90%E7%94%A8%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E4%B9%8B%E2%80%9C%E6%88%B3%E6%B0%94%E7%90%83%E2%80%9D/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="题目描述：有编号为0到n-1的n个气球，每个气球上都标有一个数组，存在nums数组中。 每当你戳破一个气球i时，你可以获得nums[left] x nums[i] x nums[right]个积分，其中left和right代表与i相邻的两个气球的编号，当你戳破了气球i后，气球left和气球right就变成了相邻的气球。现在要求你按某种顺序戳破所有的气球，能获得的最大积分是多少？（你可以假设nums">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-15T14:52:04.000Z">
+<meta property="article:modified_time" content="2020-06-16T13:06:45.890Z">
+<meta property="article:author" content="Li Yang">
+<meta property="article:tag" content="动态规划">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Hexo" title="Hexo"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Hexo">Hexo</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/04/15/巧妙运用动态规划之“戳气球”/" title="巧妙运用动态规划之“戳气球”" itemprop="url">巧妙运用动态规划之“戳气球”</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Li Yang" target="_blank" itemprop="author">Li Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2020-04-15T14:52:04.000Z" itemprop="datePublished"> Published 2020-04-15</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目描述："><span class="toc-number">1.</span> <span class="toc-text">题目描述：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#示例："><span class="toc-number">1.1.</span> <span class="toc-text">示例：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#思路："><span class="toc-number">1.2.</span> <span class="toc-text">思路：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h3 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h3><p>有编号为0到n-1的n个气球，每个气球上都标有一个数组，存在nums数组中。</p>
+<p>每当你戳破一个气球i时，你可以获得nums[left] x nums[i] x nums[right]个积分，其中left和right代表与i相邻的两个气球的编号，当你戳破了气球i后，气球left和气球right就变成了相邻的气球。现在要求你按某种顺序戳破所有的气球，能获得的最大积分是多少？（你可以假设nums[-1]和nums[n]都等于1，但注意它们不是真实存在的，所以不能被戳破）。</p>
+<h4 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h4><ul>
+<li>输入：[3, 1, 5, 8]</li>
+<li>输出：167</li>
+<li>解释：nums = [3, 1, 5, 8] —-&gt; [3, 5, 8] —-&gt; [3, 8] —-&gt; [8] —-&gt; [] ;   scores = 3 X 1 X 5 + 3 X 5 X 8 + 1 X 3 X 8 + 1 X 8 X 1 = 167</li>
+</ul>
+<h4 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h4><p>​        本题类似于一个消消乐的游戏，消掉一个数，获取与之相邻两个元素的乘积，然后能获取到的最大分值。对于常规的数组类的动态规划题目，他们一般原数组在每一步的操作后，不会改变，比如求一个整数数组的最长递增子序列问题、求两个字符串的最长公共子序列等等，每一步的状态dp[i]的值是在静态环境中求解的，因为数组本身不会发生变化，一般比较好求。但是本题，每个元素在被消掉过后，原数组就会发生变化，这样就加大了我们求解每一步的状态dp数组的难度。</p>
+<p>​        我们分析一下这个操作过程，当你戳破了气球i后，气球left和气球right就变成了相邻的气球，如果我们只戳爆nums[i…j]（闭区间）的气球，对于索引为i &lt;= k &lt;= j的气球，总有一个气球是最后被戳爆的，我们可以求出所有的满足条件的k作为最后一个被戳爆的气球时，能在nums[i…j]的获取的积分数，然后求这些值中的最大值作为该区间能获取的最大积分。于是，可以定义dp[i] [j]表示在nums数组中，只戳爆nums[i…j]（闭区间）能够获取的最大积分数，那么状态转移方程为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dp[i][j] = max&#123;dp[i][k-<span class="number">1</span>] + dp[k+<span class="number">1</span>][j] + nums[i-<span class="number">1</span>] * nums[k] * nums[j+<span class="number">1</span>] | (i &lt;= k &lt;= j)&#125;</span><br></pre></td></tr></table></figure>
+<p>采用自底向上的方式可以减少重复的计算。具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">maxCoins</span><span class="params">(<span class="keyword">int</span>[] nums)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//动态规划，自底向上求解</span></span><br><span class="line">        <span class="comment">//dp[i][j]表示在nums数组中，只戳爆nums[i...j]（闭区间）能够获取的最大积分数</span></span><br><span class="line">        <span class="comment">//最终结果直接取dp[0][nums.length - 1]即可</span></span><br><span class="line">        <span class="comment">//状态转移方程：dp[i][j] = max&#123;dp[i][k-1] + dp[k+1][j] + nums[i-1] * nums[k] * nums[j+1] (i &lt;= k &lt;= j)&#125;</span></span><br><span class="line">        <span class="comment">//当i &gt; j时，dp[i][j] = 0;</span></span><br><span class="line">        <span class="keyword">int</span> n = nums.length;</span><br><span class="line">        <span class="keyword">int</span>[] newNum = <span class="keyword">new</span> <span class="keyword">int</span>[n+<span class="number">2</span>];  <span class="comment">//扩展一下nums</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n + <span class="number">2</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i == <span class="number">0</span> || i == n + <span class="number">1</span>) &#123;</span><br><span class="line">                newNum[i] = <span class="number">1</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                newNum[i] = nums[i - <span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span>[][] dp = <span class="keyword">new</span> <span class="keyword">int</span>[n+<span class="number">2</span>][n+<span class="number">2</span>];  <span class="comment">//扩展一下便于处理</span></span><br><span class="line">        <span class="comment">//自底向上，明确计算粒度：从i到j,第一次长度是1,第二次长度2,直到长度是n</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> len = <span class="number">1</span>; len &lt;= n; len++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n - len + <span class="number">1</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">int</span> j = i + len - <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> k = i; k &lt;= j; k++) &#123;</span><br><span class="line">                    dp[i][j] = Math.max(dp[i][j], dp[i][k-<span class="number">1</span>] + newNum[i-<span class="number">1</span>] * newNum[k] * newNum[j+<span class="number">1</span>] + dp[k+<span class="number">1</span>][j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">1</span>][n]; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/动态规划/">动态规划</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2020/04/15/%E5%B7%A7%E5%A6%99%E8%BF%90%E7%94%A8%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E4%B9%8B%E2%80%9C%E6%88%B3%E6%B0%94%E7%90%83%E2%80%9D/" data-title="巧妙运用动态规划之“戳气球” | Hexo" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2020/03/16/贪心算法之剪绳子/"  title="贪心算法之剪绳子">
+ <strong>下一篇：</strong><br/> 
+ <span>贪心算法之剪绳子
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目描述："><span class="toc-number">1.</span> <span class="toc-text">题目描述：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#示例："><span class="toc-number">1.1.</span> <span class="toc-text">示例：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#思路："><span class="toc-number">1.2.</span> <span class="toc-text">思路：</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/算法/" title="算法">算法<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/随笔/" title="随笔">随笔<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/动态规划/" title="动态规划">动态规划<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/贪心/" title="贪心">贪心<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://leetcode-cn.com" target="_blank" title="一个程序员算法训练场">力扣</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="rsspart">
+	<a href="/atom.xml" target="_blank" title="rss">RSS</a>
+</div>
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Li Yang in UESTC. <br/>
+			This is my blog,believe it or not.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		<a href="http://weibo.com/2176287895" target="_blank" class="icon-weibo" title="微博"></a>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="Li Yang">Li Yang</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
