@@ -1,0 +1,585 @@
+
+ <!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="dns-prefetch" href="//cdn.bootcss.com" />
+  <link rel="dns-prefetch" href="//cdn.mathjax.org" />
+  
+    <title>滑动窗口处理源串、模式串的一类问题 | welcome to my blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="Li Yang">
+    
+
+    
+    <meta name="description" content="​        有时候我们会遇到这样的题：在源串中找出一个长度最小的子串，要求这个子串满足与模式串有某种关系，例如包含模式串中所有字符之类的。我们当然可以利用双重循环检查从某个索引开始的子串满不满足要求，然后去更新最小的子串，这样的时间复杂度是O(N^2)，但是我们可以用滑动窗口的思想来优化时间复杂度。这个算法技巧的思路非常简单，就是维护一个窗口，不断滑动，然后更新答案。该算法的大致逻辑如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="滑动窗口处理源串、模式串的一类问题">
+<meta property="og:url" content="http://yoursite.com/2020/03/29/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%A4%84%E7%90%86%E6%BA%90%E4%B8%B2%E3%80%81%E6%A8%A1%E5%BC%8F%E4%B8%B2%E7%9A%84%E4%B8%80%E7%B1%BB%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="welcome to my blog">
+<meta property="og:description" content="​        有时候我们会遇到这样的题：在源串中找出一个长度最小的子串，要求这个子串满足与模式串有某种关系，例如包含模式串中所有字符之类的。我们当然可以利用双重循环检查从某个索引开始的子串满不满足要求，然后去更新最小的子串，这样的时间复杂度是O(N^2)，但是我们可以用滑动窗口的思想来优化时间复杂度。这个算法技巧的思路非常简单，就是维护一个窗口，不断滑动，然后更新答案。该算法的大致逻辑如下：">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-29T14:21:45.000Z">
+<meta property="article:modified_time" content="2020-07-01T12:43:24.449Z">
+<meta property="article:author" content="Li Yang">
+<meta property="article:tag" content="滑动窗口">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="welcome to my blog" type="application/atom+xml">
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/jacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/jacman.jpg">
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="welcome to my blog" title="welcome to my blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="welcome to my blog">welcome to my blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+						<li><a href="/about">About</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2020/03/29/滑动窗口处理源串、模式串的一类问题/" title="滑动窗口处理源串、模式串的一类问题" itemprop="url">滑动窗口处理源串、模式串的一类问题</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="Li Yang" target="_blank" itemprop="author">Li Yang</a>
+		
+  <p class="article-time">
+    <time datetime="2020-03-29T14:21:45.000Z" itemprop="datePublished"> Published 2020-03-29</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">Contents</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目描述："><span class="toc-number">1.</span> <span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#示例："><span class="toc-number">2.</span> <span class="toc-text">示例：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#输入：S-“ADOBECODEBANC”-T-“ABC”"><span class="toc-number">2.1.</span> <span class="toc-text">输入：S &#x3D; “ADOBECODEBANC”, T &#x3D; “ABC”</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#输出：-“BANC”"><span class="toc-number">2.2.</span> <span class="toc-text">输出： “BANC”</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#说明：如果S中不存在这样的子串，则返回空串。"><span class="toc-number">3.</span> <span class="toc-text">说明：如果S中不存在这样的子串，则返回空串。</span></a></li></ol>
+		
+		</div>
+		
+		<p>​        有时候我们会遇到这样的题：在源串中找出一个长度最小的子串，要求这个子串满足与模式串有某种关系，例如包含模式串中所有字符之类的。我们当然可以利用双重循环检查从某个索引开始的子串满不满足要求，然后去更新最小的子串，这样的时间复杂度是O(N^2)，但是我们可以用滑动窗口的思想来优化时间复杂度。这个算法技巧的思路非常简单，就是维护一个窗口，不断滑动，然后更新答案。该算法的大致逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> left = <span class="number">0</span>, right = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (right &lt; s.size()) &#123;`</span><br><span class="line">    <span class="comment">// 增大窗口</span></span><br><span class="line">    window.add(s[right]);</span><br><span class="line">    right++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (窗口满足要求) &#123;</span><br><span class="line">        <span class="comment">// 缩小窗口</span></span><br><span class="line">        window.remove(s[left]);</span><br><span class="line">        left++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​        其实困扰大家的，不是算法的思路，而是各种细节问题。比如说如何向窗口中添加新元素，如何缩小窗口，在窗口滑动的哪个阶段更新结果。滑动窗口的部分题目其实可以用下面的算法思想解决：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 滑动窗口算法 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">slidingWindow</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">    维护一个map类型的数据结构need（表示t中需要的每种字符及其需要出现次数）</span><br><span class="line">    维护一个map类型的数据结构window（表示当前窗口中需要的每种字符及其需要出现次数）</span><br><span class="line"></span><br><span class="line">    <span class="comment">//维护一个左闭右开的区间[left, right)</span></span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">0</span>, right = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> valid = <span class="number">0</span>;  <span class="comment">//window中有几个字符的数量已经满足了need的要求</span></span><br><span class="line">    <span class="keyword">while</span> (right &lt; s.size()) &#123;</span><br><span class="line">        <span class="comment">// c 是将移入窗口的字符</span></span><br><span class="line">        <span class="keyword">char</span> c = s[right];</span><br><span class="line">        <span class="comment">// 右移窗口</span></span><br><span class="line">        right++;</span><br><span class="line">        <span class="comment">// 进行窗口内数据的一系列更新</span></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断左侧窗口是否要收缩</span></span><br><span class="line">        <span class="keyword">while</span> (窗口需要收缩) &#123;</span><br><span class="line">            <span class="comment">// d 是将移出窗口的字符</span></span><br><span class="line">            <span class="keyword">char</span> d = s[left];</span><br><span class="line">            <span class="comment">// 左移窗口</span></span><br><span class="line">            left++;</span><br><span class="line">            <span class="comment">// 进行窗口内数据的一系列更新</span></span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​        例如下面这个题：</p>
+<h3 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h3><p>给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字符的最小子串。</p>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a>示例：</h3><h4 id="输入：S-“ADOBECODEBANC”-T-“ABC”"><a href="#输入：S-“ADOBECODEBANC”-T-“ABC”" class="headerlink" title="输入：S = “ADOBECODEBANC”, T = “ABC”"></a>输入：S = “ADOBECODEBANC”, T = “ABC”</h4><h4 id="输出：-“BANC”"><a href="#输出：-“BANC”" class="headerlink" title="输出： “BANC”"></a>输出： “BANC”</h4><h3 id="说明：如果S中不存在这样的子串，则返回空串。"><a href="#说明：如果S中不存在这样的子串，则返回空串。" class="headerlink" title="说明：如果S中不存在这样的子串，则返回空串。"></a>说明：如果S中不存在这样的子串，则返回空串。</h3><p>​        这个题我们就可以使用上面的滑动窗口的方法，一直扩大缩小窗口大小，然后更新子串即可，具体源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">minWindow</span><span class="params">(String s, String t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span>[] need = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">128</span>];  <span class="comment">//char数组用来记录t中某个字符出现的次数</span></span><br><span class="line">    <span class="keyword">char</span>[] window = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">128</span>];  <span class="comment">//window数组表示当前窗口中包含的某个字符的次数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span>[] s_array = s.toCharArray();</span><br><span class="line">    <span class="keyword">char</span>[] t_array = t.toCharArray();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">char</span> c : t_array) &#123;</span><br><span class="line">        need[c]++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> k = getNumsOfNotZero(need);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> left = <span class="number">0</span>, right = <span class="number">0</span>;  <span class="comment">//维护一个左闭右开的窗口[left, right)</span></span><br><span class="line">    <span class="keyword">int</span> valid = <span class="number">0</span>;  <span class="comment">//valid表示当前窗口中满足need要求的字符种类个数</span></span><br><span class="line">    <span class="keyword">int</span> start = <span class="number">0</span>, len = Integer.MAX_VALUE;  <span class="comment">//start表示返回结果中第一个字符在s中的索引位置，len表示该子串的长度</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (right &lt; s_array.length) &#123;</span><br><span class="line">        <span class="keyword">char</span> temp1 = s_array[right];</span><br><span class="line">        right++;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//更新操作</span></span><br><span class="line">        <span class="keyword">if</span> (need[temp1] != <span class="number">0</span>) &#123;</span><br><span class="line">            window[temp1]++;</span><br><span class="line">            <span class="keyword">if</span> (window[temp1] == need[temp1]) &#123;</span><br><span class="line">                valid++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//判断左窗口是否要收缩</span></span><br><span class="line">        <span class="keyword">while</span> (valid == k) &#123;</span><br><span class="line">            <span class="comment">//更新最小覆盖子串</span></span><br><span class="line">            <span class="keyword">if</span> (right - left &lt; len) &#123;</span><br><span class="line">                start = left;</span><br><span class="line">                len = right - left;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">char</span> temp2 = s_array[left];</span><br><span class="line">            left++;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//更新操作</span></span><br><span class="line">            <span class="keyword">if</span> (need[temp2] != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (window[temp2] == need[temp2]) &#123;</span><br><span class="line">                    valid--;</span><br><span class="line">                &#125;</span><br><span class="line">                window[temp2]--;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> len == Integer.MAX_VALUE ? <span class="string">""</span> :s.substring(start, start + len);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//返回input数组中不为零的元素个数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getNumsOfNotZero</span><span class="params">(<span class="keyword">char</span>[] input)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> res = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; input.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (input[i] != <span class="number">0</span>) &#123;</span><br><span class="line">            res++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>​        这里思路还是比较清晰的，用一个valid变量来记录当前窗口中有多少个字符满足了t的要求，如果数量等于t中字符的种类数，就可以缩小窗口。还有一个技巧就是我们维护的是一个左闭右开的区间，这对于计算窗口的大小等细节来说是很巧妙的。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/滑动窗口/">滑动窗口</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="http://yoursite.com/2020/03/29/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%A4%84%E7%90%86%E6%BA%90%E4%B8%B2%E3%80%81%E6%A8%A1%E5%BC%8F%E4%B8%B2%E7%9A%84%E4%B8%80%E7%B1%BB%E9%97%AE%E9%A2%98/" data-title="滑动窗口处理源串、模式串的一类问题 | welcome to my blog" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2020/04/15/巧妙运用动态规划之“戳气球”/" title="巧妙运用动态规划之“戳气球”">
+  <strong>上一篇：</strong><br/>
+  <span>
+  巧妙运用动态规划之“戳气球”</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2020/03/29/BFS算法的一点个人理解/"  title="BFS算法的一点个人理解">
+ <strong>下一篇：</strong><br/> 
+ <span>BFS算法的一点个人理解
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">Contents</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目描述："><span class="toc-number">1.</span> <span class="toc-text">题目描述：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#示例："><span class="toc-number">2.</span> <span class="toc-text">示例：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#输入：S-“ADOBECODEBANC”-T-“ABC”"><span class="toc-number">2.1.</span> <span class="toc-text">输入：S &#x3D; “ADOBECODEBANC”, T &#x3D; “ABC”</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#输出：-“BANC”"><span class="toc-number">2.2.</span> <span class="toc-text">输出： “BANC”</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#说明：如果S中不存在这样的子串，则返回空串。"><span class="toc-number">3.</span> <span class="toc-text">说明：如果S中不存在这样的子串，则返回空串。</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+<aside class="clearfix">
+
+  
+
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">Categories</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/数学/" title="数学">数学<sup>4</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/算法/" title="算法">算法<sup>13</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/随笔/" title="随笔">随笔<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">Tags</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/回溯/" title="回溯">回溯<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/动态规划/" title="动态规划">动态规划<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/BFS/" title="BFS">BFS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/单调栈/" title="单调栈">单调栈<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/单调队列/" title="单调队列">单调队列<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/快速幂/" title="快速幂">快速幂<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/并查集/" title="并查集">并查集<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数学/" title="数学">数学<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/递归/" title="递归">递归<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/滑动窗口/" title="滑动窗口">滑动窗口<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/贪心/" title="贪心">贪心<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/排序/" title="排序">排序<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">Links</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+          <li>
+            
+            	<a href="https://leetcode-cn.com" target="_blank" title="一个程序员算法训练场">力扣</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+  
+
+
+  <div class="weiboshow">
+  <p class="asidetitle">Weibo</p>
+    <iframe width="100%" height="119" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=119&fansRow=2&ptype=1&speed=0&skin=9&isTitle=1&noborder=1&isWeibo=0&isFans=0&uid=&verifier=b3593ceb&dpc=1"></iframe>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<section class="info">
+		<p> Hello ,I&#39;m Li Yang in UESTC. <br/>
+			This is my blog, welcome.</p>
+	</section>
+	 
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2020 
+		
+		<a href="/about" target="_blank" title="Li Yang">Li Yang</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e6d1f421bbc9962127a50488f9ed37d1";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="Back to Top"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+</body>
+</html>
